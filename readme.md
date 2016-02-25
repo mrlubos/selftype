@@ -41,7 +41,7 @@ h2 again
 
 > This is a quoted text, let's see how long it can get and how it will behave when a newline character will be eventually inserted.
 
-Jump in the [document](#h1)
+Jump in the [document](#h1 again)
 
 1. First item?
 2. Test
