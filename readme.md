@@ -33,8 +33,7 @@ AT&T
 
 ###### h6
 
-# h1 again
-===
+## h1 again
 
 h2 again
 ---
