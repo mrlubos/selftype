@@ -16,3 +16,7 @@ This is another regular paragraph.
 <cite>This is a cite</cite>
 
 <del>This is a del</del>
+
+AT&T
+
+&copy;
