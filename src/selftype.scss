@@ -1,0 +1,131 @@
+$gap: 16px;
+
+html, body {
+    background-color: #efefef;
+    font-family: 'San Francisco', 'Helvetica Neue', 'Open Sans';
+    margin: 0;
+    padding: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 0 0 $gap 0;
+    padding: 0;
+}
+
+.box {
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin: 0 auto;
+    max-width: 800px;
+    padding: $gap;
+    position: relative;
+
+    .st-text {
+        font-style: italic;
+        font-weight: 600;
+
+        &:after {
+            content: '|';
+            font-style: normal;
+            font-weight: 700;
+            position: relative;
+            top: -4px;
+            animation: blink 1s step-end infinite;
+        }
+    }
+    
+    &.content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        
+        > .quote {
+            background: #f9f9f9;
+            border-left: (3 * 2px) solid #ccc;
+            box-sizing: border-box;
+            color: rgba(0, 0, 0, .7);
+            display: block;
+            font-size: 32px;
+            line-height: 1.5;
+            margin: 0 auto;
+            padding: $gap;
+            quotes: "\201C""\201D""\2018""\2019";
+
+            &:before {
+                color: #ccc;
+                content: open-quote;
+                font-size: 4em;
+                line-height: 0.1em;
+                margin-right: 0.25em;
+                vertical-align: -0.4em;
+            }
+        }
+    }
+    
+    > .info {
+        color: rgba(0, 0, 0, .7);
+        padding: 2 * $gap;
+        
+        a {
+            color: rgba(0, 0, 0, .7);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        
+        > h1, > h2 { text-align: center; }
+        
+        > h1 { font-size: 36px; }
+        
+        > h2 {
+            font-size: 32px;
+            font-weight: 500;
+        }
+        
+        > ol > li,
+        > p {
+            color: rgba(255, 255, 255, .9);
+            font-size: 18px;
+            font-weight: 400;
+            line-height: 1.5;
+        }
+        
+        > p {
+            &:last-child {
+                margin-bottom: 0;
+                margin-top: 2em;
+            }
+        }
+        
+        > ol > li { margin-bottom: $gap / 2; }
+        
+        &.brown {
+            background-color: rgb(50, 50, 50);
+            color: white;
+            
+            a { color: white; }
+        }
+    }
+    
+    &:last-child { margin-bottom: 0; }
+}
+
+i.code, pre.code {
+    background-color: #efefef;
+    color: rgba(0, 0, 0, .7);
+    font-family: "Lucida Console", monospace;
+    font-size: 16px;
+    font-style: normal;
+    padding: 4px 8px;
+}
+
+i.code { margin: 0 ($gap / 2); }
+
+pre.code {
+    display: inline-block;
+    padding: 4px 12px;
+}
+
+@keyframes blink {
+    0%  { opacity: 1; }
+    50% { opacity: 0; }
+}
