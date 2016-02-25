@@ -42,6 +42,19 @@ h2 again
 > This is a quoted text, let's see how long it can get and how it will behave when a newline character will be eventually inserted.
 
 1. First item?
+2. Test
+3. Sss
 
-1.	Test
-2. Sss
+* heheh
+* aaaaa
+* bbbbb
+
++ hello
++ hey
++ hi
+
+- sss
+- sss
+- sss
+
+
