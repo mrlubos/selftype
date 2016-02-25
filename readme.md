@@ -42,23 +42,9 @@ h2 again
 
 Jump in the [document](#getting-started)
 
-1. First item?
-2. Test
-3. Sss
-
-* heheh
-* aaaaa
-* bbbbb
-
-+ hello
-+ hey
-+ hi
-
 - sss
 - sss
 - sss
-
-	var x = 6;
 
 		var y = 8;
 
@@ -66,8 +52,10 @@ Jump in the [document](#getting-started)
 
 Let's [link](http://www.google.com 'Test') you somewhere.
 
-[id]: Hehehee "Optional Title Here"
-
-I talk with so much _emphasis_
+I talk with so much **emphasis**
 
 I like to code like this `var x = 6;`
+
+```javascript
+var x = 6;
+```
