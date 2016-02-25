@@ -24,4 +24,9 @@ To use this library in your project, perform the following steps.
 
 That's it! Enjoy SelfType!
 
+## Demo
+
+You can view the demo on [CodePen].
+
+[codepen]: http://codepen.io/lmenus/pen/eZOYXo "SelfType.js demo"
 [slack]: http://slack.com "Slack's Homepage"
