@@ -10,3 +10,9 @@ This is a regular paragraph.
 </table>
 
 This is another regular paragraph.
+
+<span>This is a span</span>
+
+<cite>This is a cite</cite>
+
+<del>This is a del</del>
