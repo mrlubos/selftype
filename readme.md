@@ -41,6 +41,8 @@ h2 again
 
 > This is a quoted text, let's see how long it can get and how it will behave when a newline character will be eventually inserted.
 
+Jump in the [document][id]
+
 1. First item?
 2. Test
 3. Sss
@@ -57,4 +59,10 @@ h2 again
 - sss
 - sss
 
-		var x = 6;
+	var x = 6;
+
+---
+
+Let's [link](http://www.google.com 'Test') you somewhere.
+
+[id]: http://example.com "Optional Title Here"
