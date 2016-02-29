@@ -35,7 +35,7 @@ To use this library in your project, perform the following steps.
     - `pause - integer` - Time in ms to wait on the end of the animation cycle. [default: 1500]
     - `pauseStart - integer` - Time in ms to wait before the word is animated. If skipped, pause value is used.
     - `pauseEnd - integer` - Time in ms to wait after the word is animated. If skipped, pause value is used.
-    - `searchDOM - boolean` - If set to true, SelfType will use all 'data-' attributes from the node with id = 'st-text' to construct the options object. [default: true]
+    - `searchDOM - boolean` - If set to true, SelfType will use all 'data-' attributes from the node with id = 'st-text' to construct the options object. Turn off if unused to improve the performance. [default: true]
     - `speed - integer | string` - Speed of the animation. [default: 3]
     - `words - array` - Array of strings that will be animated on screen, at least two strings.
 
