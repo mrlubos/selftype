@@ -11,6 +11,7 @@ To use this library in your project, perform the following steps.
 3. Add your own stylesheets (optional).
 4. Start the animation by constructing a `var selftype = new SelfType()` class. You can optionally pass the constructor a configuration object. You can specify the following properties.
 	```javascript
+
 	var options = {
         backspace: true // {boolean} should the text be removed one letter at a time?
         backspace_highlight: true // {boolean} should the text be highlighted before being deleted? (only if backspace is set to false)
@@ -20,6 +21,12 @@ To use this library in your project, perform the following steps.
         words: ['word1', 'word2'] // {array} array of strings that will be animated on screen, min. length = 1
 	}
 	```
+```javascript
+var options = {
+    test: 13
+}
+```
+
 5. The library uses an interval to animate the text. This means that you'll have to remove it to prevent memory leaks. You can do so with `selftype.pause()`.
 
 That's it! Enjoy SelfType!
