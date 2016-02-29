@@ -9,11 +9,14 @@ To use this library in your project, perform the following steps.
 1. Copy the class SelfType into your project.
 2. Tag the element whose contents should be animated with the `id="st-text"` attribute.
 3. Add your own stylesheets (optional).
-4. Start the animation by constructing a `var st = new SelfType()` class. You can optionally pass the constructor two parameters - *options* and *words* to display. Below are the examples of parameters.
+4. Start the animation by constructing a `var st = new SelfType()` class. You can optionally pass the constructor a configuration object. Below are examples of the parameter properties.
 	```javascript
-	var options = {
-		pause: milliseconds,
-		speed: 1 to 10, 'slow', 'normal', 'fast'
+	settings: {
+        backspace: boolean // should the text be removed by 1 letter at a time?
+        backspace_highlight: boolean // should the text be highlighted before being deleted? (only if backspace is set to false)
+        highlightColor: string // hexadecimal value of the colour to use for the highlight
+		pause: integer // time to wait in milliseconds,
+		speed: 1 to 10, 'slow', 'normal', 'fast' // speed of the animation
 	}
 	```
 
