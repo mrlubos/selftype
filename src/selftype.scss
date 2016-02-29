@@ -19,19 +19,18 @@ h1, h2, h3, h4, h5, h6 {
     max-width: 800px;
     padding: $gap;
     position: relative;
+    
+    .st-cursor {
+        font-style: normal;
+        font-weight: 700;
+        position: relative;
+        top: -4px;
+        animation: blink 1s step-end infinite;
+    }
 
     .st-text {
         font-style: italic;
         font-weight: 600;
-
-        &:after {
-            content: '|';
-            font-style: normal;
-            font-weight: 700;
-            position: relative;
-            top: -4px;
-            animation: blink 1s step-end infinite;
-        }
     }
     
     &.content {
