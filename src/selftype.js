@@ -2,8 +2,8 @@
 
 class SelfType {
     constructor (options) {
-        this.loadOptions(options);
         this.getTextDOMNode();
+        this.loadOptions(options);
         this.setWord();
         
         return this.returnPublicMethods();
@@ -11,17 +11,17 @@ class SelfType {
     
     addHighlight () {
         var opt = this.default_options();
-        this.oldValue = this.anim_text.style.color || opt.highlightColor;
-        this.oldValueBg = this.anim_text.style.backgroundColor || opt.highlightBg;
+        this.oldValue = this.text.style.color || opt.highlightColor;
+        this.oldValueBg = this.text.style.backgroundColor || opt.highlightBg;
         
-        this.anim_text.style.backgroundColor = this.options.highlightColor;
+        this.text.style.backgroundColor = this.options.highlightColor;
         if (this.darkColor(this.options.highlightColor)) {
-            this.anim_text.style.color = opt.lightColor;
+            this.text.style.color = opt.lightColor;
         }
     }
   
     addLetter () {
-        this.anim_text.innerText += this.word.substr(0, 1);
+        this.text.innerText += this.word.substr(0, 1);
         this.word = this.word.substr(1);
         if (!this.word) {
             this.setDelay();
@@ -66,6 +66,22 @@ class SelfType {
         }
     }
     
+    getAttrsDOMNode () {
+        var options = {};
+        
+        var attrs = this.text.attributes;
+        for (var i = 0; i < attrs.length; i++) {
+            if (attrs[i].nodeName.indexOf('data-') > -1) {
+                var val = (attrs[i].nodeName === 'data-words') ? this.parseDOMWords(attrs[i].nodeValue) : attrs[i].nodeValue;
+                var parsed = parseInt(val);
+                
+                options[attrs[i].nodeName.substr(5)] = (isNaN(parsed)) ? val : parsed;
+            }
+        }
+        
+        return options;
+    }
+    
     getRandomWord () {
         var w = this.options.words;
         if (typeof w !== 'object' || w === null || w.length === 0) {
@@ -84,25 +100,15 @@ class SelfType {
     getTextDOMNode () {
         var text = document.getElementById('st-text');
         if (text !== null) {
-            this.anim_text = text;
+            this.text = text;
         }
     }
   
     loadOptions (options) {
         this.options = this.options();
-        
-        if (typeof options !== 'object') return;
-        
-        for (var prop in options) {
-            if (prop === 'speed') {
-                options[prop] = this.parseSpeed(options[prop]);
-            }
-            
-            if (prop === 'words') {
-                options[prop] = (typeof options[prop] === 'object' && options[prop] !== null && options[prop].length >= 2) ? options[prop] : this.options.words;
-            }
-            
-            this.options[prop] = options[prop];
+        this.parseConfigObject(options);
+        if (this.options.searchDOM === true) {
+            this.parseDOMConfig();
         }
     }
   
@@ -113,10 +119,41 @@ class SelfType {
             backspaceHighlight: true,
             highlightColor: '#289BCC',
             pause: 1500,
+            searchDOM: true,
             speed: 3,
             words: ['awesome', 'amazing', 'the best language ever', 'pain', 'blood, sweat and tears', 'torture'],
         };
     };
+    
+    parseConfigObject(options) {
+        if (typeof options !== 'object') return;
+        
+        for (var prop in options) {
+            if (prop === 'speed') {
+                options[prop] = this.parseSpeed(options[prop]);
+            }
+
+            if (prop === 'words') {
+                options[prop] = (typeof options[prop] === 'object' && options[prop] !== null && options[prop].length >= 2) ? options[prop] : this.options.words;
+            }
+
+            this.options[prop] = options[prop];
+        }
+    }
+    
+    parseDOMConfig () {
+        this.parseConfigObject(this.getAttrsDOMNode());
+    }
+    
+    parseDOMWords (string) {
+        var array = string.split(',');
+        var i = 0;
+        array.forEach(function (value) {
+            array[i] = array[i].trim();
+            i++;
+        })
+        return array;
+    }
     
     parseSpeed (speed) {
         if (typeof speed === 'string') {
@@ -175,7 +212,7 @@ class SelfType {
 
                 if (_that.word) {
                     _that.addLetter();
-                } else if (_that.anim_text.innerText) {
+                } else if (_that.text.innerText) {
                     if (_that.options.backspace === true) {
                         _that.removeLetter();
                     } else {
@@ -193,14 +230,14 @@ class SelfType {
     }
     
     removeHighlight () {
-        this.anim_text.style.backgroundColor = this.oldValueBg;
-        this.anim_text.style.color = this.oldValue;
+        this.text.style.backgroundColor = this.oldValueBg;
+        this.text.style.color = this.oldValue;
     }
   
     removeLetter () {
-        var text = this.anim_text.innerText;
-        this.anim_text.innerText = text.substr(0, text.length - 1);
-        if (!this.anim_text.innerText) {
+        var text = this.text.innerText;
+        this.text.innerText = text.substr(0, text.length - 1);
+        if (!this.text.innerText) {
             this.setDelay();
         }
     }
@@ -225,7 +262,7 @@ class SelfType {
         }
 
         setTimeout(function () {
-            _that.anim_text.innerText = '';
+            _that.text.innerText = '';
             _that.removeHighlight();
             _that.setDelay(-(_that.options.pause / 4));
             _that.resetting_text = false;

@@ -14,12 +14,13 @@ To use this library in your project, perform the following steps.
 
 	{
         appendPeriod: boolean, // should a period be added after the animated text?
-        backspace: boolean // should the text be removed one letter at a time?
-        backspaceHighlight: boolean // should the text be highlighted before being deleted? (only if backspace is set to false)
-        highlightColor: string // hexadecimal value of the colour to use for the highlight
-		pause: integer // time in milliseconds on the end of animation,
-		speed: 1 to 10, 'slow', 'normal', 'fast' // speed of the animation
-        words: array // array of strings that will be animated on screen, min. length = 1
+        backspace: boolean, // should the text be removed one letter at a time?
+        backspaceHighlight: boolean, // should the text be highlighted before being deleted? (only if backspace is set to false)
+        highlightColor: string, // hexadecimal value of the colour to use for the highlight
+		pause: integer, // time in milliseconds on the end of animation,
+        searchDOM: boolean, // if set to true, will use all 'data-' attributes from the node with id = 'st-text' to construct the options object
+		speed: 1 to 10, 'slow', 'normal', 'fast', // speed of the animation
+        words: array, // array of strings that will be animated on screen, min. length = 1
 	}
 	```
 5. The library uses an interval to animate the text. This means that you'll have to remove it to prevent memory leaks. You can do so with `selftype.pause()`.
