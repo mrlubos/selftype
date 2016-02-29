@@ -21,12 +21,6 @@ To use this library in your project, perform the following steps.
         words: ['word1', 'word2'] // {array} array of strings that will be animated on screen, min. length = 1
 	}
 	```
-```javascript
-var options = {
-    test: 13
-}
-```
-
 5. The library uses an interval to animate the text. This means that you'll have to remove it to prevent memory leaks. You can do so with `selftype.pause()`.
 
 That's it! Enjoy SelfType!
