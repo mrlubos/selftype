@@ -81,22 +81,12 @@ h1, h2, h3, h4, h5, h6 {
             font-weight: 500;
         }
         
-        > ol > li,
         > p {
             color: rgba(255, 255, 255, .9);
             font-size: 18px;
             font-weight: 400;
             line-height: 1.5;
         }
-        
-        > p {
-            &:last-child {
-                margin-bottom: 0;
-                margin-top: 2em;
-            }
-        }
-        
-        > ol > li { margin-bottom: $gap / 2; }
         
         &.brown {
             background-color: rgb(50, 50, 50);
@@ -107,22 +97,6 @@ h1, h2, h3, h4, h5, h6 {
     }
     
     &:last-child { margin-bottom: 0; }
-}
-
-i.code, pre.code {
-    background-color: #efefef;
-    color: rgba(0, 0, 0, .7);
-    font-family: "Lucida Console", monospace;
-    font-size: 16px;
-    font-style: normal;
-    padding: 4px 8px;
-}
-
-i.code { margin: 0 ($gap / 2); }
-
-pre.code {
-    display: inline-block;
-    padding: 4px 12px;
 }
 
 @keyframes blink {
