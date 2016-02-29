@@ -1,11 +1,22 @@
 'use strict';
 
 class SelfType {
-    constructor (config, words) {
-        this.loadSettings(config, words);
+    constructor (options) {
+        this.loadSettings(options);
         this.exposePublicMethods();
         this.getTextDOMNode();
         this.setWord();
+    }
+    
+    addHighlight () {
+        var opt = this.default_options();
+        this.oldValue = this.anim_text.style.color || opt.highlightColor;
+        this.oldValueBg = this.anim_text.style.backgroundColor || opt.highlightBg;
+        
+        this.anim_text.style.backgroundColor = this.options.highlightColor;
+        if (this.darkColor(this.options.highlightColor)) {
+            this.anim_text.style.color = opt.lightColor;
+        }
     }
   
     addLetter () {
@@ -16,8 +27,28 @@ class SelfType {
         }
     }
     
+    darkColor (color) {
+        if (color.indexOf('#') === -1) return false;
+        
+        var rgb = parseInt(color.substring(1), 16); // strip the hash sign from the colour
+        var r = (rgb >> 16) & 0xff;  // extract red
+        var g = (rgb >>  8) & 0xff;  // extract green
+        var b = (rgb >>  0) & 0xff;  // extract blue
+        
+        var med = Math.floor((r + g + b) / 3);
+
+        if (med > 255 / 2) {
+            return true;
+        }
+        
+        return false;
+    }
+    
     default_options () {
         return {
+            highlightBg: 'transparent',
+            highlightColor: 'rgba(0, 0, 0, .7)',
+            lightColor: 'rgba(255, 255, 255, .9)',            
             max_speed: 10,
             min_speed: 1,
         };
@@ -61,27 +92,19 @@ class SelfType {
     loadConfig (config) {
         this.options = this.options();
         
-        if (typeof config === 'object') {
-            for (var prop in config) {
-                if (prop === 'speed') {
-                    config[prop] = this.parseSpeed(config[prop]);
-                }
-                this.options[prop] = config[prop];
+        if (typeof config !== 'object') return;
+        
+        for (var prop in config) {
+            if (prop === 'speed') {
+                config[prop] = this.parseSpeed(config[prop]);
             }
+            this.options[prop] = config[prop];
         }
     }
     
-    loadSettings (config, words) {
-        // Checks if the parameters are not swapped and 
-        // puts them in the correct order.
-        if ((typeof config === 'object' && (config === null || config[0] !== undefined)) || (typeof words === 'object' && Object.keys(words).length)) {
-            var save = config;
-            config = words;
-            words = save;
-        }
-        
-        this.loadConfig(config);
-        this.loadWords(words);
+    loadSettings (options) {        
+        this.loadConfig(options.settings);
+        this.loadWords(options.words);
     }
     
     loadWords (words) {
@@ -90,6 +113,9 @@ class SelfType {
   
     options () {
         return {
+            backspace: true,
+            backspace_highlight: true,
+            highlightColor: '#289BCC',
             pause: 1500,
             speed: 3,
         };
@@ -121,7 +147,9 @@ class SelfType {
             
             if (speed > opt.max_speed) {
                 speed = opt.max_speed;
-            } else if (speed < opt.min_speed) {
+            }
+            
+            if (speed < opt.min_speed) {
                 speed = opt.min_speed;
             }
         } else {
@@ -136,20 +164,24 @@ class SelfType {
     }
     
     playAnimation () {
-        var _ = this;
-        var speed = Math.round(250/_.options.speed);
+        var _that = this;
+        var speed = Math.round(250/_that.options.speed);
         
-        _.interval = setInterval(function () {
-            if (!_.timestamp || (_.timestamp && _.delayHasPassed()))
+        _that.interval = setInterval(function () {
+            if (!_that.timestamp || (_that.timestamp && _that.delayHasPassed()))
             {
-                _.removeDelay();
+                _that.removeDelay();
 
-                if (_.word) {
-                    _.addLetter();
-                } else if (_.anim_text.innerText) {
-                    _.removeLetter();
+                if (_that.word) {
+                    _that.addLetter();
+                } else if (_that.anim_text.innerText) {
+                    if (_that.options.backspace) {
+                        _that.removeLetter();
+                    } else {
+                        _that.resetAnimText(_that.options.backspace_highlight);
+                    }
                 } else {
-                    _.setWord();
+                    _that.setWord();
                 }
             }
         }, speed);
@@ -157,6 +189,11 @@ class SelfType {
   
     removeDelay () {
         this.timestamp = undefined;
+    }
+    
+    removeHighlight () {
+        this.anim_text.style.backgroundColor = this.oldValueBg;
+        this.anim_text.style.color = this.oldValue;
     }
   
     removeLetter () {
@@ -171,9 +208,37 @@ class SelfType {
         this.pauseAnimation();
         this.playAnimation();
     }
+    
+    resetAnimText (highlight) {
+        if (this.resetting_text) {
+            return;
+        } else {
+            this.resetting_text = true;
+        }
+        
+        var _that = this;
+        var timeout = (highlight) ? (this.options.pause / 1.5) : 0;
+            
+        if (highlight) {
+            this.addHighlight();
+        }
+
+        setTimeout(function () {
+            _that.anim_text.innerText = '';
+            _that.removeHighlight();
+            _that.setDelay(-(_that.options.pause / 4));
+            _that.resetting_text = false;
+        }, timeout);
+    }
   
-    setDelay () {
-        this.timestamp = Date.now();
+    setDelay (len) {
+        var offset = 0;
+        
+        if (len !== undefined && typeof len === 'number') {
+            offset = len;
+        }
+                
+        this.timestamp = Date.now() + offset;
     }
     
     setWord () {
@@ -185,7 +250,13 @@ class SelfType {
 var st;
 
 window.onload = function () {
-    st = new SelfType();
+    var options = {
+        settings: {
+            //backspace: false,
+            //backspace_highlight: false,
+        },
+    };
+    st = new SelfType(options);
 }
 
 window.onbeforeunload = function () {
