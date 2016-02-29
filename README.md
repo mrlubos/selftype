@@ -33,9 +33,9 @@ To use this library in your project, perform the following steps.
     - `pause - integer` - Time in ms to wait on the end of the animation cycle. [default: 1500]
     - `pauseStart - integer` - Time in ms to wait before the word is animated. If skipped, pause value is used.
     - `pauseEnd - integer` - Time in ms to wait after the word is animated. If skipped, pause value is used.
-    - `searchDOM - boolean` - If set to true, will use all 'data-' attributes from the node with id = 'st-text' to construct the options object. [default: true]
+    - `searchDOM - boolean` - If set to true, SelfType will use all 'data-' attributes from the node with id = 'st-text' to construct the options object. [default: true]
     - `speed - integer | string` - Speed of the animation. [default: 3]
-    - `words - array` - Array of strings that will be animated on screen, min. length = 2.
+    - `words - array` - Array of strings that will be animated on screen, at least two strings.
 
     You can also create the configuration object directly from HTML. Simply prepend any of the properties above with *data-* and insert this attribute into the HTML code on the element you chose in step 2, like so: `<span id="st-text" data-words="amazing, boring"></span>`
 5. The library uses an interval to animate the text. This means that you'll have to remove it to prevent memory leaks. You can do so with `selftype.pause()`.
