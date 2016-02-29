@@ -1,6 +1,6 @@
 # SelfType.js
 
-JavaScript class that animates text similarly to the style that can be found at [Slack][]'s homepage.
+JavaScript class that animates text similarly to the style that can be found at [Google Docs][]' or [Slack][]'s homepage.
 
 ## Instructions
 
@@ -30,4 +30,5 @@ That's it! Enjoy SelfType!
 You can view the demo on [CodePen].
 
 [codepen]: http://codepen.io/lmenus/pen/eZOYXo "SelfType.js demo"
+[google-docs]: https://www.google.com/docs/about/ "Google Docs' About Page"
 [slack]: http://slack.com "Slack's Homepage"
