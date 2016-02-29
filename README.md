@@ -23,7 +23,7 @@ To use this library in your project, perform the following steps.
         words: array, // array of strings that will be animated on screen, min. length = 1
 	}
 	```
-    You can also create the configuration object directly from HTML. Simply prepend any of the properties above with 'data-' and insert this attribute into the HTML code on the element you chose in step 2, like so: `<span id="st-text" data-words="amazing, boring"></span>`
+    You can also create the configuration object directly from HTML. Simply prepend any of the properties above with *data-* and insert this attribute into the HTML code on the element you chose in step 2, like so: `<span id="st-text" data-words="amazing, boring"></span>`
 5. The library uses an interval to animate the text. This means that you'll have to remove it to prevent memory leaks. You can do so with `selftype.pause()`.
 6. The object constructed with `new SelfType()` provides you with the following methods that can be used or modified at any time during the runtime.
     ```javascript
