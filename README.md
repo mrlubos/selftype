@@ -11,6 +11,7 @@ To use this library in your project, perform the following steps.
 3. Add your own stylesheets (optional).
 4. Start the animation by constructing a `var selftype = new SelfType()` class. You can optionally pass the constructor a configuration object. You can specify the following properties.
 	```javascript
+
 	{
         backspace: true // {boolean} should the text be removed one letter at a time?
         backspace_highlight: true // {boolean} should the text be highlighted before being deleted? (only if backspace is set to false)
