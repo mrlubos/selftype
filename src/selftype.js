@@ -57,6 +57,17 @@ class SelfType {
   
     delayHasPassed () {
         if (!this.timestamp) return true;
+        
+        if (!this.text.innerText) { // pauseStart
+            if (this.options.pauseStart !== undefined) {
+                return this.timestamp + this.options.pauseStart < Date.now();
+            }
+        } else { // pauseEnd
+            if (this.options.pauseEnd !== undefined) {
+                return this.timestamp + this.options.pauseEnd < Date.now();
+            }
+        }
+        
         return this.timestamp + this.options.pause < Date.now();
     }
     

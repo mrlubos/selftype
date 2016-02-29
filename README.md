@@ -13,14 +13,16 @@ To use this library in your project, perform the following steps.
 	```javascript
 
 	{
-        appendPeriod: boolean, // should a period be added after the animated text?
-        backspace: boolean, // should the text be removed one letter at a time?
-        backspaceHighlight: boolean, // should the text be highlighted before being deleted? (only if backspace is set to false)
-        highlightColor: string, // hexadecimal value of the colour to use for the highlight
-		pause: integer, // time in milliseconds on the end of animation,
-        searchDOM: boolean, // if set to true, will use all 'data-' attributes from the node with id = 'st-text' to construct the options object
-		speed: 1 to 10, 'slow', 'normal', 'fast', // speed of the animation
-        words: array, // array of strings that will be animated on screen, min. length = 1
+        appendPeriod: boolean, // Should a period be added after the animated text? [default: false]
+        backspace: boolean, // Should the text be removed one letter at a time? [default: true]
+        backspaceHighlight: boolean, // Should the text be highlighted before being deleted? (only if backspace is set to false) [default: true]
+        highlightColor: string, // Hexadecimal value of the colour to use for the highlight. [default: '#289BCC']
+		pause: integer, // Time in ms to wait on the end of the animation cycle. [default: 1500]
+        pauseStart: integer, // Time in ms to wait before the word is animated. If skipped, pause value is used.
+        pauseEnd: integer, // Time in ms to wait after the word is animated. If skipped, pause value is used.
+        searchDOM: boolean, // If set to true, will use all 'data-' attributes from the node with id = 'st-text' to construct the options object. [default: true]
+		speed: 1 to 10, 'slow', 'normal', 'fast', // Speed of the animation. [default: 3]
+        words: array, // Array of strings that will be animated on screen, min. length = 2
 	}
 	```
     You can also create the configuration object directly from HTML. Simply prepend any of the properties above with *data-* and insert this attribute into the HTML code on the element you chose in step 2, like so: `<span id="st-text" data-words="amazing, boring"></span>`
