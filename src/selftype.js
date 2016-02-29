@@ -250,14 +250,14 @@ class SelfType {
     }
 }
 
-var st;
+var selftype;
 
 window.onload = function () {
-    st = new SelfType();
+    selftype = new SelfType();
 }
 
 window.onbeforeunload = function () {
-    if (st !== undefined) {
-        st.pause();
+    if (selftype !== undefined) {
+        selftype.pause();
     }
 };
