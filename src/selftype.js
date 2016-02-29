@@ -2,10 +2,11 @@
 
 class SelfType {
     constructor (options) {
-        this.loadSettings(options);
-        this.exposePublicMethods();
+        this.loadOptions(options);
         this.getTextDOMNode();
         this.setWord();
+        
+        return this.returnPublicMethods();
     }
     
     addHighlight () {
@@ -53,28 +54,15 @@ class SelfType {
             min_speed: 1,
         };
     }
-    
-    default_words () {
-        return [
-            'awesome', 'amazing', 'the best language ever', 
-            'pain', 'blood, sweat and tears', 'torture'
-        ];
-    }
   
     delayHasPassed () {
         if (!this.timestamp) return true;
         return this.timestamp + this.options.pause < Date.now();
     }
     
-    exposePublicMethods () {
-        this.pause = this.pauseAnimation;
-        this.play  = this.playAnimation;
-        this.reset = this.resetAnimation;
-    }
-    
     getRandomWord () {
-        var random = Math.floor(Math.random() * this.words.length);
-        var word = this.words[random];
+        var random = Math.floor(Math.random() * this.options.words.length);
+        var word = this.options.words[random];
         if (word === this.last_word) {
             word = this.getRandomWord();
         }
@@ -89,38 +77,33 @@ class SelfType {
         }
     }
   
-    loadConfig (config) {
+    loadOptions (options) {
         this.options = this.options();
         
-        if (typeof config !== 'object') return;
+        if (typeof options !== 'object') return;
         
-        for (var prop in config) {
+        for (var prop in options) {
             if (prop === 'speed') {
-                config[prop] = this.parseSpeed(config[prop]);
+                options[prop] = this.parseSpeed(options[prop]);
             }
             
-            if (prop !== 'words') {
-                this.options[prop] = config[prop];
+            if (prop === 'words') {
+                options[prop] = (typeof options[prop] === 'object' && options[prop] !== null && options[prop].length >= 2) ? options[prop] : this.options.words;
             }
+            
+            this.options[prop] = options[prop];
         }
-    }
-    
-    loadSettings (options) {        
-        this.loadConfig(options);
-        this.loadWords(options.words);
-    }
-    
-    loadWords (words) {
-        this.words = (typeof words === 'object' && words !== null && words.length) ? words : this.default_words();
     }
   
     options () {
         return {
+            appendPeriod: false,
             backspace: true,
             backspace_highlight: true,
             highlightColor: '#289BCC',
             pause: 1500,
             speed: 3,
+            words: ['awesome', 'amazing', 'the best language ever', 'pain', 'blood, sweat and tears', 'torture'],
         };
     };
     
@@ -170,6 +153,10 @@ class SelfType {
         var _that = this;
         var speed = Math.round(250/_that.options.speed);
         
+        if (this.interval) {
+            this.pauseAnimation();
+        }
+        
         _that.interval = setInterval(function () {
             if (!_that.timestamp || (_that.timestamp && _that.delayHasPassed()))
             {
@@ -178,7 +165,7 @@ class SelfType {
                 if (_that.word) {
                     _that.addLetter();
                 } else if (_that.anim_text.innerText) {
-                    if (_that.options.backspace) {
+                    if (_that.options.backspace === true) {
                         _that.removeLetter();
                     } else {
                         _that.resetAnimText(_that.options.backspace_highlight);
@@ -213,7 +200,7 @@ class SelfType {
     }
     
     resetAnimText (highlight) {
-        if (this.resetting_text) {
+        if (this.resetting_text === true) {
             return;
         } else {
             this.resetting_text = true;
@@ -222,7 +209,7 @@ class SelfType {
         var _that = this;
         var timeout = (highlight) ? (this.options.pause / 1.5) : 0;
             
-        if (highlight) {
+        if (highlight === true) {
             this.addHighlight();
         }
 
@@ -232,6 +219,14 @@ class SelfType {
             _that.setDelay(-(_that.options.pause / 4));
             _that.resetting_text = false;
         }, timeout);
+    }
+    
+    returnPublicMethods () {
+        return {
+            options: this.options,
+            pause: this.pauseAnimation,
+            play: this.playAnimation,
+        };
     }
   
     setDelay (len) {
@@ -245,7 +240,12 @@ class SelfType {
     }
     
     setWord () {
-        this.word = this.getRandomWord() + '.';
+        this.word = this.getRandomWord();
+        
+        if (this.options.appendPeriod === true) {
+            this.word += '.';
+        }
+        
         this.resetAnimation();
     }
 }

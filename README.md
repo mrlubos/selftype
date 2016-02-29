@@ -13,6 +13,7 @@ To use this library in your project, perform the following steps.
 	```javascript
 
 	{
+        appendPeriod: boolean, // should a period be added after the animated text?
         backspace: boolean // should the text be removed one letter at a time?
         backspace_highlight: boolean // should the text be highlighted before being deleted? (only if backspace is set to false)
         highlightColor: string // hexadecimal value of the colour to use for the highlight
@@ -22,6 +23,13 @@ To use this library in your project, perform the following steps.
 	}
 	```
 5. The library uses an interval to animate the text. This means that you'll have to remove it to prevent memory leaks. You can do so with `selftype.pause()`.
+6. The object constructed with `new SelfType()` provides you with the following methods that can be used or modified at any time during the runtime.
+    ```javascript
+
+    selftype.options - complete configuration object that can be changed at any time
+    selftype.pause() - pause the animation
+    selftype.play() - play the animation
+    ```
 
 That's it! Enjoy SelfType!
 
