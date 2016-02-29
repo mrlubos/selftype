@@ -13,7 +13,7 @@ To use this library in your project, perform the following steps.
 	```javascript
 
 	{
-        backspace: true // {boolean} should the text be removed one letter at a time?
+        backspace: boolean // should the text be removed one letter at a time?
         backspace_highlight: true // {boolean} should the text be highlighted before being deleted? (only if backspace is set to false)
         highlightColor: '#4991d7' // {string} hexadecimal value of the colour to use for the highlight
 		pause: 1000 // {integer} time in milliseconds on the end of animation,
