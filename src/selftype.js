@@ -98,12 +98,15 @@ class SelfType {
             if (prop === 'speed') {
                 config[prop] = this.parseSpeed(config[prop]);
             }
-            this.options[prop] = config[prop];
+            
+            if (prop !== 'words') {
+                this.options[prop] = config[prop];
+            }
         }
     }
     
     loadSettings (options) {        
-        this.loadConfig(options.settings);
+        this.loadConfig(options);
         this.loadWords(options.words);
     }
     
@@ -250,13 +253,7 @@ class SelfType {
 var st;
 
 window.onload = function () {
-    var options = {
-        settings: {
-            //backspace: false,
-            //backspace_highlight: false,
-        },
-    };
-    st = new SelfType(options);
+    st = new SelfType();
 }
 
 window.onbeforeunload = function () {
