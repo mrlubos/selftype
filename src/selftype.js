@@ -60,10 +60,21 @@ class SelfType {
         return this.timestamp + this.options.pause < Date.now();
     }
     
+    errors () {
+        return {
+            words: ['Incorrect parameter set for words.'],
+        }
+    }
+    
     getRandomWord () {
+        var w = this.options.words;
+        if (typeof w !== 'object' || w === null || w.length === 0) {
+            this.options.words = this.errors().words;
+        }
+        
         var random = Math.floor(Math.random() * this.options.words.length);
         var word = this.options.words[random];
-        if (word === this.last_word) {
+        if (word === this.last_word && this.options.words.length > 1) {
             word = this.getRandomWord();
         }
         this.last_word = word;
@@ -207,7 +218,7 @@ class SelfType {
         }
         
         var _that = this;
-        var timeout = (highlight) ? (this.options.pause / 1.5) : 0;
+        var timeout = (highlight === true) ? (this.options.pause / 1.5) : 0;
             
         if (highlight === true) {
             this.addHighlight();
