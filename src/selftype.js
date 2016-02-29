@@ -99,7 +99,7 @@ class SelfType {
         return {
             appendPeriod: false,
             backspace: true,
-            backspace_highlight: true,
+            backspaceHighlight: true,
             highlightColor: '#289BCC',
             pause: 1500,
             speed: 3,
@@ -168,7 +168,7 @@ class SelfType {
                     if (_that.options.backspace === true) {
                         _that.removeLetter();
                     } else {
-                        _that.resetAnimText(_that.options.backspace_highlight);
+                        _that.resetAnimText(_that.options.backspaceHighlight);
                     }
                 } else {
                     _that.setWord();

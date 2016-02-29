@@ -15,7 +15,7 @@ To use this library in your project, perform the following steps.
 	{
         appendPeriod: boolean, // should a period be added after the animated text?
         backspace: boolean // should the text be removed one letter at a time?
-        backspace_highlight: boolean // should the text be highlighted before being deleted? (only if backspace is set to false)
+        backspaceHighlight: boolean // should the text be highlighted before being deleted? (only if backspace is set to false)
         highlightColor: string // hexadecimal value of the colour to use for the highlight
 		pause: integer // time in milliseconds on the end of animation,
 		speed: 1 to 10, 'slow', 'normal', 'fast' // speed of the animation
