@@ -7,7 +7,7 @@ JavaScript class that animates text similarly to the style that can be found at 
 To use this library in your project, perform the following steps.
 
 1. Copy the class SelfType into your project.
-2. Tag the element whose contents should be animated with the `id="st-text"` attribute.
+2. Link the HTML elements to SelfType.js. This is done simply by setting an appropriate id attribute on the HTML tags. To activate the element whose contents should be animated, add the `id="st-text"` attribute. To activate the cursor, add the `id = "st-cursor"` attribute. If not set up properly, you will get a console warning.
 3. Add your own stylesheets (optional).
 4. Start the animation by constructing a `var selftype = new SelfType()` class. You can optionally pass the constructor a configuration object. Below is an example of such object.
 	```javascript
@@ -17,6 +17,7 @@ To use this library in your project, perform the following steps.
         backspace: true,
         backspaceHighlight: true,
         highlightColor: '#289BCC',
+        highlightHideCursor: true,
 		pause: 1500,
         pauseStart: 0,
         pauseEnd: 0,
@@ -30,6 +31,7 @@ To use this library in your project, perform the following steps.
     - `backspace - boolean` - Should the text be removed one letter at a time? [default: true]
     - `backspaceHighlight - boolean` - Should the text be highlighted before being deleted? (only if backspace is set to false) [default: true]
     - `highlightColor - string` - Hexadecimal value of the colour to use for the highlight. [default: '#289BCC']
+    - `highlightHideCursor - boolean` - Should the cursor be hidden while the text is highlighted? [default: true]
     - `pause - integer` - Time in ms to wait on the end of the animation cycle. [default: 1500]
     - `pauseStart - integer` - Time in ms to wait before the word is animated. If skipped, pause value is used.
     - `pauseEnd - integer` - Time in ms to wait after the word is animated. If skipped, pause value is used.

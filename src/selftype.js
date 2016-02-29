@@ -2,7 +2,7 @@
 
 class SelfType {
     constructor (options) {
-        this.getTextDOMNode();
+        this.getDOMNodes();
         this.loadOptions(options);
         this.setWord();
         
@@ -13,6 +13,10 @@ class SelfType {
         var opt = this.default_options();
         this.oldValue = this.text.style.color || opt.highlightColor;
         this.oldValueBg = this.text.style.backgroundColor || opt.highlightBg;
+        
+        if (this.options.highlightHideCursor === true) {
+            this.hideCursor();
+        }
         
         this.text.style.backgroundColor = this.options.highlightColor;
         if (this.darkColor(this.options.highlightColor)) {
@@ -73,11 +77,15 @@ class SelfType {
     
     errors () {
         return {
+            cursor: 'The element for the cursor could not be found! If you do not want to add one, you can ignore this message. Otherwise, make sure you included in your HTML a tag with the id attribute \'st-cursor\'.',
+            text: 'The element where SelfType should be initialised could not be found! Are you sure you provided a HTML tag with the id attribute \'st-text\'?',
             words: ['Incorrect parameter set for words.'],
         }
     }
     
     getAttrsDOMNode () {
+        if (!this.text) return;
+        
         var options = {};
         
         var attrs = this.text.attributes;
@@ -91,6 +99,23 @@ class SelfType {
         }
         
         return options;
+    }
+    
+    getDOMNodes () {
+        var cursor = document.getElementById('st-cursor');
+        var text = document.getElementById('st-text');
+        
+        if (text !== null) {
+            this.text = text;
+        } else {
+            console.warn(this.errors().text);
+        }
+        
+        if (cursor !== null) {
+            this.cursor = cursor;
+        } else {
+            console.warn(this.errors().cursor);
+        }
     }
     
     getRandomWord () {
@@ -107,12 +132,13 @@ class SelfType {
         this.last_word = word;
         return word;
     }
-  
-    getTextDOMNode () {
-        var text = document.getElementById('st-text');
-        if (text !== null) {
-            this.text = text;
-        }
+    
+    hideCursor () {
+        if (!this.cursor) return;
+        
+        console.log('aya');
+        
+        this.cursor.style.display = 'none';
     }
   
     loadOptions (options) {
@@ -129,6 +155,7 @@ class SelfType {
             backspace: true,
             backspaceHighlight: true,
             highlightColor: '#289BCC',
+            highlightHideCursor: true,
             pause: 1500,
             searchDOM: true,
             speed: 3,
@@ -216,6 +243,8 @@ class SelfType {
             this.pauseAnimation();
         }
         
+        if (!this.text) return;
+        
         _that.interval = setInterval(function () {
             if (!_that.timestamp || (_that.timestamp && _that.delayHasPassed()))
             {
@@ -241,6 +270,10 @@ class SelfType {
     }
     
     removeHighlight () {
+        if (this.options.highlightHideCursor === true) {
+            this.showCursor();
+        }
+        
         this.text.style.backgroundColor = this.oldValueBg;
         this.text.style.color = this.oldValue;
     }
@@ -266,7 +299,8 @@ class SelfType {
         }
         
         var _that = this;
-        var timeout = (highlight === true) ? (this.options.pause / 1.5) : 0;
+        var pause = (this.options.pauseEnd !== undefined) ? this.options.pauseEnd : this.options.pause;
+        var timeout = (highlight === true) ? (pause / 1.5) : 0;
             
         if (highlight === true) {
             this.addHighlight();
@@ -306,6 +340,12 @@ class SelfType {
         }
         
         this.resetAnimation();
+    }
+    
+    showCursor () {
+        if (!this.cursor) return;
+        
+        this.cursor.style.display = 'inline';
     }
 }
 
