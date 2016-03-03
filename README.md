@@ -70,6 +70,6 @@ That's it! Enjoy SelfType!
 
 You can view the demo on [CodePen].
 
-[codepen]: http://codepen.io/lmenus/pen/eZOYXo "SelfType.js demo"
+[codepen]: http://codepen.io/lmenus/full/eZOYXo/ "SelfType.js demo"
 [google]: https://www.google.com/docs/about/ "Google Docs' About Page"
 [slack]: http://slack.com "Slack's Homepage"
