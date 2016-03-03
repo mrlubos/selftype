@@ -37,8 +37,10 @@ h1, h2, h3, h4, h5, h6 {
         display: flex;
         flex-direction: column;
         justify-content: center;
+        max-height: 200px;
+        overflow: auto;
         
-        > .quote {
+        > span {
             background: #f9f9f9;
             border-left: (3 * 2px) solid #ccc;
             box-sizing: border-box;
@@ -47,16 +49,20 @@ h1, h2, h3, h4, h5, h6 {
             font-size: 32px;
             line-height: 1.5;
             margin: 0 auto;
+            overflow-y: scroll;
             padding: $gap;
-            quotes: "\201C""\201D""\2018""\2019";
+            
+            &.quote {
+                quotes: "\201C""\201D""\2018""\2019";
 
-            &:before {
-                color: #ccc;
-                content: open-quote;
-                font-size: 4em;
-                line-height: 0.1em;
-                margin-right: 0.25em;
-                vertical-align: -0.4em;
+                &:before {
+                    color: #ccc;
+                    content: open-quote;
+                    font-size: 4em;
+                    line-height: 0.1em;
+                    margin-right: 0.25em;
+                    vertical-align: -0.4em;
+                }
             }
         }
     }
@@ -92,6 +98,77 @@ h1, h2, h3, h4, h5, h6 {
             color: white;
             
             a { color: white; }
+        }
+        
+        &.small-padding {
+            padding-bottom: 1px;
+            padding-top: 0;
+        }
+    }
+    
+    > ul {
+        background-color: white;
+        display: flex;
+        min-height: 80px;
+        justify-content: space-around;
+        list-style: none;
+        padding: 0;
+        
+        > li {
+            color: rgba(0, 0, 0, .7);
+            cursor: pointer;
+            display: inline-block;
+            
+            > input {
+                display: none;
+                
+                &:checked + label {
+                    color: rgba(0, 0, 0, .7);
+                    font-weight: 700;
+                    
+                    &:before { border-color: #00897B; }
+                }
+                
+                &[type="radio"] + label:before {
+                    color: transparent;
+                    content: '\2022';
+                }
+                
+                &[type="checkbox"] + label:before {
+                    border-radius: 2px;
+                    content: '\2713';
+                }
+                
+                &:checked + label:before { color: #00897B; }
+                
+                &[type="radio"] + label:before { color: transparent; }
+            }
+
+            > label {
+                box-sizing: border-box;
+                color: rgba(0, 0, 0, .4);
+                cursor: pointer;
+                margin-right: $gap;
+                position: relative;
+                text-transform: capitalize;
+                top: 30px;
+                transition: color .3s;
+                
+                &:before {
+                    $size: 22px;
+                    border: solid 2px rgba(0, 0, 0, .3);
+                    border-radius: 50%;
+                    box-sizing: border-box;
+                    color: white;
+                    content: '';
+                    display: inline-block;
+                    height: $size;
+                    margin-right: $gap;
+                    text-align: center;
+                    width: $size;
+                    transition: border-color .3s, color .3s;
+                }
+            }
         }
     }
     

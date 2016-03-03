@@ -25,10 +25,43 @@ class SelfType {
     }
   
     addLetter () {
-        this.text.innerText += this.word.substr(0, 1);
-        this.word = this.word.substr(1);
-        if (!this.word) {
-            this.setDelay();
+        var _that = this;
+        
+        if (this.timeout === undefined || this.timeout === '') {
+            this.timeout = '';
+            var letter = this.word.substr(0, 1);
+
+            if (letter === '^') {
+                if (this.word.substr(1, 1) != '^') {
+                    if (!this.escape_next) {
+                        this.word = this.word.substr(1);
+                        letter = this.word.substr(0, 1);
+
+                        while (letter.match(/[0-9]/)) {
+                            this.timeout += letter;
+                            this.word = this.word.substr(1);
+                            letter = this.word.substr(0, 1);
+                        }
+                    }
+
+                    this.escape_next = false;
+                } else { // Escaped.
+                    this.escape_next = true;
+                }
+            }
+
+            this.timeout = parseInt(this.timeout);
+            if (isNaN(this.timeout)) this.timeout = 0;
+
+            setTimeout(function () {
+                _that.timeout = '';
+                _that.text.innerText += _that.word.substr(0, 1);
+                _that.word = _that.word.substr(1);
+                if (!_that.word) {
+                    _that.text.parentNode.scrollTop = _that.text.parentNode.scrollHeight;
+                    _that.setDelay();
+                }
+            }, this.timeout);
         }
     }
     
@@ -91,14 +124,21 @@ class SelfType {
         var attrs = this.text.attributes;
         for (var i = 0; i < attrs.length; i++) {
             if (attrs[i].nodeName.indexOf('data-') > -1) {
-                var val = (attrs[i].nodeName === 'data-words') ? this.parseDOMWords(attrs[i].nodeValue) : attrs[i].nodeValue;
+                var val = attrs[i].nodeValue;
                 var parsed = parseInt(val);
                 
                 options[attrs[i].nodeName.substr(5)] = (isNaN(parsed)) ? val : parsed;
             }
         }
         
+        var words = this.getDOMWords();
+        if (words.length) options.words = words;
+        
         return options;
+    }
+    
+    getCount () {
+        return this.count || 0;
     }
     
     getDOMNodes () {
@@ -118,6 +158,26 @@ class SelfType {
         }
     }
     
+    getDOMWords () {
+        var result = [];
+        var words = this.text.querySelectorAll('span');
+        for (var i = 0; i < words.length; i++) {
+            result.push(words[i].innerText);
+            words[i].remove();
+        }
+        return result;
+    }
+    
+    getNextWord () {
+        if (this.pointerPosition === undefined) {
+            this.resetPointer();
+        }
+        
+        var word = this.options.words[this.pointerPosition];
+        this.movePointer();
+        return word;
+    }
+    
     getRandomWord () {
         var w = this.options.words;
         if (typeof w !== 'object' || w === null || w.length === 0) {
@@ -126,19 +186,27 @@ class SelfType {
         
         var random = Math.floor(Math.random() * this.options.words.length);
         var word = this.options.words[random];
-        if (word === this.last_word && this.options.words.length > 1) {
+        
+        if (this.pointerPosition === random && this.options.words.length > 1) {
             word = this.getRandomWord();
+        } else {
+            this.movePointer(random);
         }
-        this.last_word = word;
+        
         return word;
     }
     
     hideCursor () {
         if (!this.cursor) return;
-        
-        console.log('aya');
-        
         this.cursor.style.display = 'none';
+    }
+    
+    increaseCount () {
+        if (this.count === undefined) {
+            this.count = 0;
+        }
+        
+        this.count++;
     }
   
     loadOptions (options) {
@@ -146,6 +214,18 @@ class SelfType {
         this.parseConfigObject(options);
         if (this.options.searchDOM === true) {
             this.parseDOMConfig();
+        }
+    }
+    
+    movePointer (position) {
+        if (position !== undefined) {
+            this.pointerPosition = position;
+        } else {
+            if (this.pointerPosition < this.options.words.length - 1) {
+                this.pointerPosition += 1;
+            } else {
+                this.resetPointer();
+            }
         }
     }
   
@@ -156,10 +236,14 @@ class SelfType {
             backspaceHighlight: true,
             highlightColor: '#289BCC',
             highlightHideCursor: true,
+            keepWord: false,
+            newLine: false,
             pause: 1500,
+            repeat: false,
+            randomize: false,
             searchDOM: true,
             speed: 3,
-            words: ['awesome', 'amazing', 'the best language ever', 'pain', 'blood, sweat and tears', 'torture'],
+            words: ['awesome', 'amazing', 'the best language ever', 'pain', 'blood, sweat and tears', 'torture', 'legen^3000dary'],
         };
     };
     
@@ -181,16 +265,6 @@ class SelfType {
     
     parseDOMConfig () {
         this.parseConfigObject(this.getAttrsDOMNode());
-    }
-    
-    parseDOMWords (string) {
-        var array = string.split(',');
-        var i = 0;
-        array.forEach(function (value) {
-            array[i] = array[i].trim();
-            i++;
-        })
-        return array;
     }
     
     parseSpeed (speed) {
@@ -252,7 +326,7 @@ class SelfType {
 
                 if (_that.word) {
                     _that.addLetter();
-                } else if (_that.text.innerText) {
+                } else if (_that.text.innerText && _that.options.keepWord === false) {
                     if (_that.options.backspace === true) {
                         _that.removeLetter();
                     } else {
@@ -314,11 +388,19 @@ class SelfType {
         }, timeout);
     }
     
+    resetCount () {
+        this.count = 1;
+    }
+    
+    resetPointer () {
+        this.pointerPosition = 0;
+    }
+    
     returnPublicMethods () {
         return {
             options: this.options,
-            pause: this.pauseAnimation,
-            play: this.playAnimation,
+            //pause: this.pauseAnimation,
+            //play: this.playAnimation,
         };
     }
   
@@ -333,26 +415,95 @@ class SelfType {
     }
     
     setWord () {
-        this.word = this.getRandomWord();
+        var set_word = false;
         
-        if (this.options.appendPeriod === true) {
-            this.word += '.';
+        if (this.options.repeat || (!this.options.repeat && this.getCount() < this.options.words.length)) {
+            this.word = (this.options.randomize === true) ? this.getRandomWord() : this.getNextWord();
+            set_word = true;
         }
         
-        this.resetAnimation();
+        if (set_word) {
+            if (this.options.appendPeriod === true) {
+                this.word += '.';
+            }
+
+            if (this.options.newLine === true) {
+                this.word += '\n';
+            }
+
+            if (this.options.repeat === false) {
+                this.increaseCount();
+            } else {
+                this.resetCount();
+            }
+            
+            this.playAnimation();
+        }
     }
     
     showCursor () {
         if (!this.cursor) return;
-        
         this.cursor.style.display = 'inline';
     }
 }
 
 var selftype;
 
+function addListeners () {
+    var input = document.getElementsByTagName('input');
+    for (var i = 0; i < input.length; i++) {
+        input[i].addEventListener('click', function (e) {
+            toggleStyle(e.srcElement.defaultValue, e.srcElement.checked);
+        });
+    }
+}
+
+function toggleStyle (style, checked) {
+    if (selftype === undefined) return;
+    
+    var radios = ['default', 'noBack', 'noHigh'];
+    var key;
+    
+    if (radios.indexOf(style) > -1) {
+        if (style === 'default') {
+            selftype.options.backspace = true;
+            return;
+        }
+
+        selftype.options.backspace = false;
+
+        if (style === 'noBack') {
+            selftype.options.backspaceHighlight = true;
+        } else if (style === 'noHigh') {
+            selftype.options.backspaceHighlight = false;
+        }
+    } else {
+        switch (style) {
+            case 'keepWord':
+                key = 'keepWord';
+                break;
+            case 'newLine':
+                key = 'newLine';
+                break;
+            case 'random':
+                key = 'randomize';
+                break;
+            case 'repeat':
+                key = 'repeat';
+                break;
+        }
+        
+        selftype.options[key] = checked;
+    }
+}
+
 window.onload = function () {
-    selftype = new SelfType();
+    addListeners();
+    selftype = new SelfType({
+        backspace: false,
+        keepWord: true,
+        newLine: true,
+    });
 }
 
 window.onbeforeunload = function () {
