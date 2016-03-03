@@ -38,13 +38,13 @@ To use this library in your project, perform the following steps.
     - `highlightHideCursor - boolean` - Should the cursor be hidden while the text is highlighted? [default: true]
     - `keepWord - boolean` - Should we remove the text after finishing the current word? [default: false]
     - `newLine - boolean` - Should every word start on a new line? [default: true]
-    - `pause - integer` - Time in ms to wait on the end of the animation cycle. [default: 1500]
+    - `pause - integer` - Time in ms to wait on the end of the animation cycle. [default: 1000]
     - `pauseStart - integer` - Time in ms to wait before the word is animated. If skipped, pause value is used.
     - `pauseEnd - integer` - Time in ms to wait after the word is animated. If skipped, pause value is used.
     - `repeat - boolean` - Should the entries be repeated infinite times? [default: false]
     - `randomize - boolean` - Should the words be displayed in random order? [default: false]
     - `searchDOM - boolean` - If set to true, SelfType will use all 'data-' attributes from the node with id = 'st-text' to construct the options object. In addition, SelfType will look for all nested `<span>` tags inside of the `st-text` tag, and use their contents to construct the word phrases. Turn off if unused to improve the performance. [default: true]
-    - `speed - integer | string` - Speed of the animation. [default: 3]
+    - `speed - integer | string` - Speed of the animation. [default: 5]
     - `words - array` - Array of strings that will be animated on screen, at least two strings.
 
     You can also create the configuration object directly from HTML. Simply prepend any of the properties above with *data-* (except for the words) and insert this attribute into the HTML code on the element you chose in step 2, like so: `<span id="st-text" data-words="amazing, boring"></span>`. You can also insert words directly into the HTML instead of constructing them with Javascript, like so.

@@ -29,22 +29,17 @@ class SelfType {
         
         if (this.timeout === undefined || this.timeout === '') {
             this.timeout = '';
+            
+            if (this.next_pause !== false && this.next_pause !== undefined) {
+                this.timeout = this.next_pause;
+                this.next_pause = false;
+            }
+            
             var letter = this.word.substr(0, 1);
 
             if (letter === '^') {
                 if (this.word.substr(1, 1) != '^') {
-                    if (!this.escape_next) {
-                        this.word = this.word.substr(1);
-                        letter = this.word.substr(0, 1);
-
-                        while (letter.match(/[0-9]/)) {
-                            this.timeout += letter;
-                            this.word = this.word.substr(1);
-                            letter = this.word.substr(0, 1);
-                        }
-                    }
-
-                    this.escape_next = false;
+                    letter = this.waitPattern(letter);
                 } else { // Escaped.
                     this.escape_next = true;
                 }
@@ -52,13 +47,19 @@ class SelfType {
 
             this.timeout = parseInt(this.timeout);
             if (isNaN(this.timeout)) this.timeout = 0;
+            
+            if (letter === '.' || letter === ',') {
+                var log = Math.round(Math.log(_that.options.speed + 1) * 10);
+                var base = (letter === '.') ? 6000 : 3200;   
+                this.next_pause = Math.round(base/(log - 6));
+            }
 
             setTimeout(function () {
                 _that.timeout = '';
-                _that.text.innerText += _that.word.substr(0, 1);
+                _that.text.innerText += letter;
                 _that.word = _that.word.substr(1);
+                _that.text.parentNode.scrollTop = _that.text.parentNode.scrollHeight;
                 if (!_that.word) {
-                    _that.text.parentNode.scrollTop = _that.text.parentNode.scrollHeight;
                     _that.setDelay();
                 }
             }, this.timeout);
@@ -232,17 +233,17 @@ class SelfType {
     options () {
         return {
             appendPeriod: false,
-            backspace: true,
+            backspace: false,
             backspaceHighlight: true,
             highlightColor: '#289BCC',
             highlightHideCursor: true,
-            keepWord: false,
-            newLine: false,
-            pause: 1500,
+            keepWord: true,
+            newLine: true,
+            pause: 1000,
             repeat: false,
             randomize: false,
             searchDOM: true,
-            speed: 3,
+            speed: 5,
             words: ['awesome', 'amazing', 'the best language ever', 'pain', 'blood, sweat and tears', 'torture', 'legen^3000dary'],
         };
     };
@@ -275,7 +276,7 @@ class SelfType {
                     break;
 
                 case 'fast':
-                    speed = 5;
+                    speed = 7;
                     break;
 
                 case 'sonic':
@@ -285,7 +286,7 @@ class SelfType {
                 case 'medium':
                 case 'normal':
                 default:
-                    speed = 3;
+                    speed = 5;
                     break;
             }
         } else if (typeof speed === 'number') {
@@ -427,9 +428,11 @@ class SelfType {
                 this.word += '.';
             }
 
-            if (this.options.newLine === true) {
-                this.word += '\n';
+            if (this.newline_next_one === true && this.text.innerText) {
+                this.word = '\n' + this.word;
             }
+            
+            this.newline_next_one = this.options.newLine;
 
             if (this.options.repeat === false) {
                 this.increaseCount();
@@ -444,6 +447,26 @@ class SelfType {
     showCursor () {
         if (!this.cursor) return;
         this.cursor.style.display = 'inline';
+    }
+    
+    waitPattern (letter) {
+        if (!this.escape_next) {
+            this.word = this.word.substr(1);
+            letter = this.word.substr(0, 1);
+            
+            if (this.timeout === undefined || this.timeout !== '' ) {
+                this.timeout = '';
+            }
+
+            while (letter.match(/[0-9]/)) {
+                this.timeout += letter;
+                this.word = this.word.substr(1);
+                letter = this.word.substr(0, 1);
+            }
+        }
+
+        this.escape_next = false;
+        return letter;
     }
 }
 
@@ -499,11 +522,7 @@ function toggleStyle (style, checked) {
 
 window.onload = function () {
     addListeners();
-    selftype = new SelfType({
-        backspace: false,
-        keepWord: true,
-        newLine: true,
-    });
+    selftype = new SelfType({});
 }
 
 window.onbeforeunload = function () {
