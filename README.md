@@ -58,10 +58,12 @@ To use this library in your project, perform the following steps.
     ```
 5. SelfType also supports pauses inside of each phrase. Simply enter the magic formula in form `^<integer>` and replace the integer with the time in milliseconds to wait before moving on. If you need to escape the *^* character, insert another one right after it, like so *^^*. The algorithm looks for the first non-numerical character, so be careful not to start the phrase right after it with a number - if you need to use a number, put a space between the pattern and your phrase. 
 6. The library uses an interval to animate the text. This means that you'll have to remove it to prevent memory leaks. You can do so with `selftype.pause()`.
-7. The object constructed with `new SelfType()` provides you with the following methods that can be used or modified at any time during the runtime.
+7. The object constructed with `new SelfType()` provides you with the following methods and properties that can be used or modified at any time during the runtime.
     ```javascript
 
-    selftype.options - complete configuration object that can be changed
+    options - complete configuration object that can be changed
+    pause() - pauses the animation
+    play() - resumes the animation
     ```
 
 That's it! Enjoy SelfType!
