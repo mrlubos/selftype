@@ -10,81 +10,83 @@ class SelfType {
     }
     
     addHighlight () {
-        var opt = this.default_options();
-        this.oldValue = this.text.style.color || opt.highlightColor;
-        this.oldValueBg = this.text.style.backgroundColor || opt.highlightBg;
+        var def_opt = this.default_options();
+        var opt = this.options;
         
-        if (this.options.highlightHideCursor === true) {
-            this.hideCursor();
+        this.oldValue = this.text.style.color || def_opt.highlightColor;
+        this.oldValueBg = this.text.style.backgroundColor || def_opt.highlightBg;
+        
+        if (opt.highlightHideCursor === true && this.cursor) {
+            this.cursor.style.display = 'none';
         }
         
-        this.text.style.backgroundColor = this.options.highlightColor;
-        if (this.darkColor(this.options.highlightColor)) {
-            this.text.style.color = opt.lightColor;
+        this.text.style.backgroundColor = opt.highlightColor;
+        if (this.darkColor(opt.highlightColor)) {
+            this.text.style.color = def_opt.lightColor;
         }
     }
   
     addLetter () {
-        var _that = this;
+        if (this.timeout !== undefined && this.timeout !== '') return;
         
-        if (this.timeout === undefined || this.timeout === '') {
-            this.timeout = '';
-            
-            if (this.next_pause !== false && this.next_pause !== undefined) {
-                this.timeout = this.next_pause;
-                this.next_pause = false;
-            }
-            
-            var letter = this.word.substr(0, 1);
+        var self = this;
+        var char = this.word.substr(0, 1);
+        
+        this.setupTimeout();
 
-            if (letter === '^') {
-                if (this.word.substr(1, 1) != '^') {
-                    letter = this.waitPattern(letter);
-                } else { // Escaped.
-                    this.escape_next = true;
-                }
-            }
+        if (char === '^') char = this.waitPattern(char);
+        if (char === '.' || char === ',') this.parsePauseCharacter(char);
+        
+        this.dirtyHack();
+        this.parseTimeout();
 
-            this.timeout = parseInt(this.timeout);
-            if (isNaN(this.timeout)) this.timeout = 0;
-            
-            if (letter === '.' || letter === ',') {
-                var log = Math.round(Math.log(_that.options.speed + 1) * 10);
-                var base = (letter === '.') ? 6000 : 3200;   
-                this.next_pause = Math.round(base/(log - 6));
+        setTimeout(function () {
+            self.text.innerHTML += char;
+            self.word = self.word.substr(1);
+            self.scrollToBottom();
+            self.resetTimeout();
+            if (!self.word) {
+                self.setDelay();
             }
-
-            setTimeout(function () {
-                _that.timeout = '';
-                _that.text.innerText += letter;
-                _that.word = _that.word.substr(1);
-                _that.text.parentNode.scrollTop = _that.text.parentNode.scrollHeight;
-                if (!_that.word) {
-                    _that.setDelay();
-                }
-            }, this.timeout);
+        }, this.timeout);
+    }
+    
+    adjustCount () {
+        if (this.options.repeat === true) {
+            this.count = 1;
+            return;
         }
+        
+        if (this.count === undefined) {
+            this.count = 0;
+        }
+        
+        this.count++;
+    }
+    
+    canGenerateNewWord () {
+        if (this.options.repeat === true) return true;
+        return (this.count || 0) < this.options.words.length;
     }
     
     darkColor (color) {
         if (color.indexOf('#') === -1) return false;
         
-        var rgb = parseInt(color.substring(1), 16); // strip the hash sign from the colour
-        var r = (rgb >> 16) & 0xff;  // extract red
-        var g = (rgb >>  8) & 0xff;  // extract green
-        var b = (rgb >>  0) & 0xff;  // extract blue
+        var rgb = parseInt(color.substring(1), 16); // Strip the hash sign from the colour.
+        var r = (rgb >> 16) & 0xff; 
+        var g = (rgb >>  8) & 0xff;
+        var b = (rgb >>  0) & 0xff;
         
         var med = Math.floor((r + g + b) / 3);
 
-        if (med > 255 / 2) {
-            return true;
-        }
+        if (med > 255 / 2) return true;
         
         return false;
     }
     
     default_options () {
         return {
+            default_speed: 5,
             highlightBg: 'transparent',
             highlightColor: 'rgba(0, 0, 0, .7)',
             lightColor: 'rgba(255, 255, 255, .9)',            
@@ -96,17 +98,23 @@ class SelfType {
     delayHasPassed () {
         if (!this.timestamp) return true;
         
-        if (!this.text.innerText) { // pauseStart
-            if (this.options.pauseStart !== undefined) {
-                return this.timestamp + this.options.pauseStart < Date.now();
-            }
-        } else { // pauseEnd
-            if (this.options.pauseEnd !== undefined) {
-                return this.timestamp + this.options.pauseEnd < Date.now();
-            }
+        var prop = 'pause';
+        var route = (!this.text.innerHTML) ? 'pauseStart' : 'pauseEnd';
+        
+        if (this.options[route] !== undefined) {
+            prop = route;
         }
         
-        return this.timestamp + this.options.pause < Date.now();
+        return this.timestamp + this.options[prop] < Date.now();
+    }
+    
+    dirtyHack () {
+        this.text.innerHTML += '<br/>';
+        this.text.innerHTML = this.text.innerHTML.substr(0, this.text.innerHTML.length - 4);
+    }
+    
+    emptyTextHTML () {
+        this.text.innerHTML = '';
     }
     
     errors () {
@@ -115,6 +123,13 @@ class SelfType {
             text: 'The element where SelfType should be initialised could not be found! Are you sure you provided a HTML tag with the id attribute \'st-text\'?',
             words: ['Incorrect parameter set for words.'],
         }
+    }
+    
+    finishResetText () {
+        this.emptyTextHTML();
+        this.removeHighlight();
+        this.setDelay(-(this.options.pause / 4));
+        this.resetting_text = false;
     }
     
     getAttrsDOMNode () {
@@ -138,10 +153,6 @@ class SelfType {
         return options;
     }
     
-    getCount () {
-        return this.count || 0;
-    }
-    
     getDOMNodes () {
         var cursor = document.getElementById('st-cursor');
         var text = document.getElementById('st-text');
@@ -163,27 +174,28 @@ class SelfType {
         var result = [];
         var words = this.text.querySelectorAll('span');
         for (var i = 0; i < words.length; i++) {
-            result.push(words[i].innerText);
+            result.push(words[i].innerHTML);
             words[i].remove();
         }
+        
+        this.emptyTextHTML();
         return result;
     }
     
     getNextWord () {
+        this.wordsIsValidArray({errprCheck: true});
+        
         if (this.pointerPosition === undefined) {
             this.resetPointer();
         }
         
         var word = this.options.words[this.pointerPosition];
-        this.movePointer();
+        this.movePointer(); // Move the pointer after we got the correct word.
         return word;
     }
     
     getRandomWord () {
-        var w = this.options.words;
-        if (typeof w !== 'object' || w === null || w.length === 0) {
-            this.options.words = this.errors().words;
-        }
+        this.wordsIsValidArray({errorCheck: true});
         
         var random = Math.floor(Math.random() * this.options.words.length);
         var word = this.options.words[random];
@@ -196,37 +208,25 @@ class SelfType {
         
         return word;
     }
-    
-    hideCursor () {
-        if (!this.cursor) return;
-        this.cursor.style.display = 'none';
-    }
-    
-    increaseCount () {
-        if (this.count === undefined) {
-            this.count = 0;
-        }
-        
-        this.count++;
-    }
   
     loadOptions (options) {
         this.options = this.options();
         this.parseConfigObject(options);
         if (this.options.searchDOM === true) {
-            this.parseDOMConfig();
+            this.parseConfigObject(this.getAttrsDOMNode());
         }
     }
     
     movePointer (position) {
         if (position !== undefined) {
             this.pointerPosition = position;
+            return;
+        }
+        
+        if (this.pointerPosition < (this.options.words.length - 1)) {
+            this.pointerPosition += 1;
         } else {
-            if (this.pointerPosition < this.options.words.length - 1) {
-                this.pointerPosition += 1;
-            } else {
-                this.resetPointer();
-            }
+            this.resetPointer();
         }
     }
   
@@ -244,7 +244,7 @@ class SelfType {
             randomize: false,
             searchDOM: true,
             speed: 5,
-            words: ['awesome', 'amazing', 'the best language ever', 'pain', 'blood, sweat and tears', 'torture', 'legen^3000dary'],
+            words: ['awesome', 'amazing', 'the best language ever', 'pain', 'blood, sweat and tears', 'torture'],
         };
     };
     
@@ -257,18 +257,22 @@ class SelfType {
             }
 
             if (prop === 'words') {
-                options[prop] = (typeof options[prop] === 'object' && options[prop] !== null && options[prop].length >= 2) ? options[prop] : this.options.words;
+                options[prop] = (this.wordsIsValidArray({words: options[prop]})) ? options[prop] : this.options.words;
             }
 
             this.options[prop] = options[prop];
         }
     }
     
-    parseDOMConfig () {
-        this.parseConfigObject(this.getAttrsDOMNode());
+    parsePauseCharacter (char) {
+        var log = Math.round(Math.log(this.options.speed + 1) * 10);
+        var base = (char === '.') ? 6000 : 3200;   
+        this.next_pause = Math.round(base/(log - 6));
     }
     
     parseSpeed (speed) {
+        var opt = this.default_options();
+        
         if (typeof speed === 'string') {
             switch (speed) {
                 case 'slow':
@@ -283,15 +287,12 @@ class SelfType {
                     speed = 10;
                     break;
 
-                case 'medium':
                 case 'normal':
                 default:
-                    speed = 5;
+                    speed = opt.default_speed;
                     break;
             }
         } else if (typeof speed === 'number') {
-            var opt = this.default_options();
-            
             if (speed > opt.max_speed) {
                 speed = opt.max_speed;
             }
@@ -300,10 +301,17 @@ class SelfType {
                 speed = opt.min_speed;
             }
         } else {
-            speed = 3;
+            speed = opt.default_speed;
         }
         
         return speed;
+    }
+    
+    parseTimeout () {
+        this.timeout = parseInt(this.timeout);
+        if (isNaN(this.timeout)) {
+            this.timeout = 0;
+        }
     }
     
     pauseAnimation () {
@@ -311,42 +319,33 @@ class SelfType {
     }
     
     playAnimation () {
-        var _that = this;
-        var speed = Math.round(250/_that.options.speed);
+        if (this.text === undefined || this.text === null) return;
+        
+        var self = this;
+        var opt = this.options;
         
         if (this.interval) {
             this.pauseAnimation();
         }
         
-        if (!this.text) return;
-        
-        _that.interval = setInterval(function () {
-            if (!_that.timestamp || (_that.timestamp && _that.delayHasPassed()))
-            {
-                _that.removeDelay();
+        self.interval = setInterval(function () {
+            if (self.timestamp && !self.delayHasPassed()) return;
 
-                if (_that.word) {
-                    _that.addLetter();
-                } else if (_that.text.innerText && _that.options.keepWord === false) {
-                    if (_that.options.backspace === true) {
-                        _that.removeLetter();
-                    } else {
-                        _that.resetAnimText(_that.options.backspaceHighlight);
-                    }
-                } else {
-                    _that.setWord();
-                }
+            self.timestamp = undefined; // Removes the delay.
+
+            if (self.word) {
+                self.addLetter();
+            } else if (self.text.innerHTML && opt.keepWord === false) {
+                opt.backspace === true ? self.removeLetter() : self.resetText(opt.backspaceHighlight);
+            } else {
+                self.setWord();
             }
-        }, speed);
-    }
-  
-    removeDelay () {
-        this.timestamp = undefined;
+        }, Math.round(250 / opt.speed));
     }
     
     removeHighlight () {
-        if (this.options.highlightHideCursor === true) {
-            this.showCursor();
+        if (this.options.highlightHideCursor === true && this.cursor) {
+            this.cursor.style.display = 'inline';
         }
         
         this.text.style.backgroundColor = this.oldValueBg;
@@ -354,61 +353,59 @@ class SelfType {
     }
   
     removeLetter () {
-        var text = this.text.innerText;
-        this.text.innerText = text.substr(0, text.length - 1);
-        if (!this.text.innerText) {
+        var text = this.text.innerHTML;
+        this.text.innerHTML = text.substr(0, text.length - 1);
+        if (!this.text.innerHTML) {
             this.setDelay();
         }
     }
     
-    resetAnimation () {
-        this.pauseAnimation();
-        this.playAnimation();
-    }
-    
-    resetAnimText (highlight) {
+    resetText (highlight) {
         if (this.resetting_text === true) {
             return;
-        } else {
-            this.resetting_text = true;
         }
         
-        var _that = this;
-        var pause = (this.options.pauseEnd !== undefined) ? this.options.pauseEnd : this.options.pause;
-        var timeout = (highlight === true) ? (pause / 1.5) : 0;
-            
+        this.resetting_text = true;
+        
+        var self = this;
+        var opt = this.options;
+        var timeout = 0;
+        
         if (highlight === true) {
+            var pause = (opt.pauseEnd !== undefined) ? opt.pauseEnd : opt.pause;
+            timeout = pause / 1.5;
             this.addHighlight();
         }
 
         setTimeout(function () {
-            _that.text.innerText = '';
-            _that.removeHighlight();
-            _that.setDelay(-(_that.options.pause / 4));
-            _that.resetting_text = false;
+            self.finishResetText();
         }, timeout);
-    }
-    
-    resetCount () {
-        this.count = 1;
     }
     
     resetPointer () {
         this.pointerPosition = 0;
     }
     
+    resetTimeout () {
+        this.timeout = '';
+    }
+    
     returnPublicMethods () {
         return {
             options: this.options,
-            //pause: this.pauseAnimation,
-            //play: this.playAnimation,
+            pause: this.pauseAnimation.bind(this),
+            play: this.playAnimation.bind(this),
         };
+    }
+    
+    scrollToBottom () {
+        this.text.parentNode.scrollTop = this.text.parentNode.scrollHeight;
     }
   
     setDelay (len) {
         var offset = 0;
         
-        if (len !== undefined && typeof len === 'number') {
+        if (len !== undefined && !isNaN(len)) {
             offset = len;
         }
                 
@@ -416,113 +413,73 @@ class SelfType {
     }
     
     setWord () {
-        var set_word = false;
+        var word = '';
         
-        if (this.options.repeat || (!this.options.repeat && this.getCount() < this.options.words.length)) {
-            this.word = (this.options.randomize === true) ? this.getRandomWord() : this.getNextWord();
-            set_word = true;
+        if (this.canGenerateNewWord()) {
+            word = (this.options.randomize === true) ? this.getRandomWord() : this.getNextWord();
         }
-        
-        if (set_word) {
+
+        if (word !== '') {
+            this.adjustCount();
+            
             if (this.options.appendPeriod === true) {
-                this.word += '.';
+                word += '.';
             }
 
-            if (this.newline_next_one === true && this.text.innerText) {
-                this.word = '\n' + this.word;
+            if (this.options.newLine === true && this.text.innerHTML) {
+                this.text.innerHTML += '<br/>';
             }
-            
-            this.newline_next_one = this.options.newLine;
-
-            if (this.options.repeat === false) {
-                this.increaseCount();
-            } else {
-                this.resetCount();
-            }
-            
-            this.playAnimation();
         }
+        
+        this.word = word;
+        this.playAnimation();
     }
     
-    showCursor () {
-        if (!this.cursor) return;
-        this.cursor.style.display = 'inline';
+    setupTimeout () {
+        this.resetTimeout();
+
+        if (this.next_pause !== false && this.next_pause !== undefined) {
+            this.timeout = this.next_pause;
+            this.next_pause = false;
+        }
     }
     
     waitPattern (letter) {
-        if (!this.escape_next) {
-            this.word = this.word.substr(1);
-            letter = this.word.substr(0, 1);
-            
+        this.word = this.word.substr(1);
+        
+        if (this.word.substr(0, 1) !== '^') {
             if (this.timeout === undefined || this.timeout !== '' ) {
                 this.timeout = '';
             }
 
-            while (letter.match(/[0-9]/)) {
+            do {
+                letter = this.word.substr(0, 1);
                 this.timeout += letter;
                 this.word = this.word.substr(1);
-                letter = this.word.substr(0, 1);
-            }
+            } while (this.word.substr(0, 1).match(/[0-9]/));
+            
+            return this.word.substr(0, 1);
         }
-
-        this.escape_next = false;
+        
         return letter;
+    }
+    
+    wordsIsValidArray (options) {
+        var words = options.words || this.options.words;
+        var is_valid = typeof words === 'object' && words !== null && words.length >= 1;
+        
+        if (!is_valid && options.errorCheck === true) {
+            this.options.words = this.errors().words;
+        }
+        
+        return is_valid;
     }
 }
 
 var selftype;
 
-function addListeners () {
-    var input = document.getElementsByTagName('input');
-    for (var i = 0; i < input.length; i++) {
-        input[i].addEventListener('click', function (e) {
-            toggleStyle(e.srcElement.defaultValue, e.srcElement.checked);
-        });
-    }
-}
-
-function toggleStyle (style, checked) {
-    if (selftype === undefined) return;
-    
-    var radios = ['default', 'noBack', 'noHigh'];
-    var key;
-    
-    if (radios.indexOf(style) > -1) {
-        if (style === 'default') {
-            selftype.options.backspace = true;
-            return;
-        }
-
-        selftype.options.backspace = false;
-
-        if (style === 'noBack') {
-            selftype.options.backspaceHighlight = true;
-        } else if (style === 'noHigh') {
-            selftype.options.backspaceHighlight = false;
-        }
-    } else {
-        switch (style) {
-            case 'keepWord':
-                key = 'keepWord';
-                break;
-            case 'newLine':
-                key = 'newLine';
-                break;
-            case 'random':
-                key = 'randomize';
-                break;
-            case 'repeat':
-                key = 'repeat';
-                break;
-        }
-        
-        selftype.options[key] = checked;
-    }
-}
-
 window.onload = function () {
-    addListeners();
-    selftype = new SelfType({});
+    selftype = new SelfType();
 }
 
 window.onbeforeunload = function () {
