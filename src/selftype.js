@@ -51,7 +51,9 @@ class SelfType {
         this.parseTimeout();
 
         setTimeout(function () {
-            self.text.innerHTML += char;
+            var node = document.createElement('i');
+            node.innerHTML = char;
+            self.text.appendChild(node);
             self.word = self.word.substr(1);
             self.scrollToBottom();
             self.resetTimeout();
