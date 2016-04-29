@@ -35,7 +35,9 @@ class SelfType {
         this.setupTimeout();
 
         if (char === '^') char = this.waitPattern(char);
-        if (char === '.' || char === ',') this.parsePauseCharacter(char);
+        if (!ignoreDiacriticalSigns && (char === '.' || char === ',')) {
+            this.parsePauseCharacter(char);
+        }
         
         this.dirtyHack();
         this.parseTimeout();
@@ -237,6 +239,7 @@ class SelfType {
             backspaceHighlight: true,
             highlightColor: '#289BCC',
             highlightHideCursor: true,
+            ignoreDiacriticalSigns: false,
             keepWord: true,
             newLine: true,
             pause: 1000,
