@@ -18,6 +18,7 @@ To use this library in your project, perform the following steps.
         backspaceHighlight: true,
         highlightColor: '#289BCC',
         highlightHideCursor: true,
+        ignoreDiacriticalSigns: true,
         keepWord: true,
         newLine: true,
 		pause: 1500,
@@ -36,6 +37,7 @@ To use this library in your project, perform the following steps.
     - `backspaceHighlight - boolean` - Should the text be highlighted before being deleted? (only if backspace is set to false) [default: true]
     - `highlightColor - string` - Hexadecimal value of the colour to use for the highlight. [default: '#289BCC']
     - `highlightHideCursor - boolean` - Should the cursor be hidden while the text is highlighted? [default: true]
+    - `ignoreDiacriticalSigns - boolean` - Should the animation pause for a couple milliseconds when reaching a diacritical sign in the word?
     - `keepWord - boolean` - Should we remove the text after finishing the current word? [default: false]
     - `newLine - boolean` - Should every word start on a new line? [default: true]
     - `pause - integer` - Time in ms to wait on the end of the animation cycle. [default: 1000]
