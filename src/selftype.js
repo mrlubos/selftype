@@ -34,7 +34,15 @@ class SelfType {
         
         this.setupTimeout();
 
-        if (char === '^') char = this.waitPattern(char);
+        if (char === '^') {
+            char = this.waitPattern(char);
+        }
+        
+        if (char === '&' && this.word.substr(0, 6) === '&nbsp;') {
+            char = '&nbsp;';
+            this.word = this.word.substr(5);
+        }
+
         if (!ignoreDiacriticalSigns && (char === '.' || char === ',')) {
             this.parsePauseCharacter(char);
         }
