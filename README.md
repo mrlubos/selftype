@@ -65,8 +65,8 @@ To use this library in your project, perform the following steps.
     </i><i class="st-cursor" id="st-cursor">|</i>
     ```
 5. SelfType also supports basic commands inside of each phrase. Their pattern is `$<command>-<value>;`. Currently, these commands are available:
-    - `$wait-<integer>` - Pauses the animation temporarily within the given word. This is useful for longer phrases, for example `He looked below and saw there a ...$wait-3000; magic potion.` The time to wait should be entered in milliseconds.
-    - `$color-<name>` - You can create your own colour definitions! If you need to make your text more lively, it is very easy to do so. When creating the configuration object, set the colors property to an object whose keys are the property names to be used, such as
+    - `$wait-<integer>;` - Pauses the animation temporarily within the given word. This is useful for longer phrases, for example `He looked below and saw there a ...$wait-3000; magic potion.` The time to wait should be entered in milliseconds.
+    - `$color-<name>;` - You can create your own colour definitions! If you need to make your text more lively, it is very easy to do so. When creating the configuration object, set the colors property to an object whose keys are the property names to be used, such as
     ```javascript
 
     colors: {
