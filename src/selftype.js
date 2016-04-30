@@ -391,7 +391,6 @@ class SelfType {
         // Private variables.
         this.count = 0;
         this.pointerPosition = 0;
-        this.resetPointer();
         this.timeout = 0;
         this.timeoutOffset = 0;
         this.timestamp = 0;
