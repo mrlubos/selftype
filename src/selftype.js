@@ -580,7 +580,7 @@ class SelfType {
         }
         
         if (char === '$' && this.parseCommand()) {
-            char = '';//this.word[0];
+            char = '';
         }
         
         if (!this.options.ignoreDiacriticalSigns && this.isInArray(char, this.options.diacriticalSigns)) {
