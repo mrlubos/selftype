@@ -37,7 +37,7 @@ To use this library in your project, perform the following steps.
     - `backspaceHighlight - boolean` - Should the text be highlighted before being deleted? (only if backspace is set to false) [default: true]
     - `color - string` - The default text colour. [default: #212121]
     - `colors - object` - Object containing colour definitions and values. [default: empty]
-    - `diacriticalSigns - array` - Which symbols should be treated as diacritical signs? This has effect only if ignoreDiacriticalSigns is set to false. [default: [',', '.', '?', '!']]
+    - `diacriticalSigns - array` - Which symbols should be treated as diacritical signs? This has effect only if ignoreDiacriticalSigns is set to false. [default: `[',', '.', '?', '!']`]
     - `highlightColor - string` - Hexadecimal value of the colour to use for the highlight. [default: #289BCC]
     - `highlightHideCursor - boolean` - Should the cursor be hidden while the text is highlighted? [default: true]
     - `ignoreDiacriticalSigns - boolean` - Should the animation continue at the same speed when reaching a diacritical sign in the word? [default: false]
