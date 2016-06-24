@@ -513,4 +513,4 @@ selftype.prototype.wordsIsValidArray = function (options) {
     return is_valid;
 };
 
-module.exports = new selftype();//
+module.exports = new selftype();
