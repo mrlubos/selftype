@@ -1,0 +1,26 @@
+{
+  "name": "selftype",
+  "version": "1.0.0",
+  "description": "Easily add animated text to your projects.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lmenus/selftype.git"
+  },
+  "keywords": [
+    "javascript",
+    "selftype",
+    "animation",
+    "dom",
+    "text"
+  ],
+  "author": "Lubos <contact@lmen.us> (http://lmen.us/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lmenus/selftype/issues"
+  },
+  "homepage": "https://github.com/lmenus/selftype#readme"
+}
